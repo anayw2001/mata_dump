@@ -19,14 +19,18 @@ on post-fs-data
     mkdir /data/vendor/radio 0777 radio radio
     mkdir /data/vendor/radio/diag_logs 0777 system system
 
-# Contain user rules for DIAG access
-# For release-keys build, only works on Sprint SKU per requirements
-
+# Allow to use ##DIAG## in userdebug also
 on property:debug.sys.logging=*
    setprop persist.sys.logging ${debug.sys.logging}
 
 on property:persist.sys.logging=2
    setprop sys.usb.config diag,serial_cdev,rmnet,adb
 
-on property:ro.boot.diagclean=true && property:sys.boot_completed=1
-    rm /dev/diag
+service cnss_diag /vendor/bin/cnss_diag -q -f
+    class main
+    user system
+    group system wifi inet net_admin sdcard_rw media_rw diag
+    oneshot
+
+on property:vold.decrypt=trigger_restart_framework
+    start cnss_diag

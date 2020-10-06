@@ -39,17 +39,6 @@ else
     log -t DRM_BOOT -p w "file: '$vbfile' or perms doesn't exist"
 fi
 
-hw_revision=`getprop ro.boot.revision`
-# Use AOSP NFC service for Felica chip
-# And also set the right property for nfc_nci lib
-# 1.7 = EVT4_F
-# 1.9 = DVT_F
-if [ "$hw_revision" == "1.7" ] || [ "$hw_revision" == "1.9" ]; then
-    setprop ro.hardware.nfc_nci cxd22xx
-else
-    setprop ro.hardware.nfc_nci msm8998
-fi
-
 # If grip manual is set to 0 (user forced to disable grip), disable it
 # Otherwise set it on
 grip_manual=`getprop persist.grip.status_manual`
